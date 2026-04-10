@@ -1,139 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Property Highlight Reel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root { --emerald: #0A5C1A; --dark-bg: #080808; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; padding: 0; background-color: var(--dark-bg); font-family: 'Inter', sans-serif; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .container { width: 100%; max-width: 500px; padding: 20px; }
-        .property-header { text-align: center; margin-bottom: 25px; padding: 0 10px; }
-        #propertyNameDisplay { font-size: 24px; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2; }
-        #listingPriceDisplay { color: var(--emerald); font-weight: 700; font-size: 18px; margin-top: 8px; }
-        .video-container { position: relative; width: 100%; aspect-ratio: 9/16; background: #000; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid var(--border); margin-bottom: 20px; }
-        video { width: 100%; height: 100%; object-fit: cover; }
-        .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 25px; padding: 20px; background: var(--glass); border-radius: 20px; border: 1px solid var(--border); }
-        .spec-item span { display: block; font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; }
-        .spec-item strong { display: block; font-size: 15px; margin-top: 4px; }
-        .features-box { margin-top: 20px; padding: 0 10px; }
-        .features-box p { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.8); font-style: italic; }
-        .btn-container { display: flex; flex-direction: column; gap: 12px; margin-top: 30px; }
-        .btn-main { background: #fff; color: var(--emerald); height: 60px; border-radius: 16px; text-decoration: none; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-        .btn-split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .btn-sub { background: var(--glass); color: #fff; height: 50px; border-radius: 14px; text-decoration: none; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); }
-        .agent-footer { margin-top: 40px; padding-bottom: 50px; text-align: center; }
-        .agent-photo { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--emerald); object-fit: cover; margin-bottom: 15px; }
-        .agent-name { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; opacity: 0.7; }
-        .loading { text-align: center; padding: 40px; color: rgba(255,255,255,0.5); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listing Reel</title>
+
+<style>
+body {
+    margin:0;
+    background:#080808;
+    color:#fff;
+    font-family:Arial, sans-serif;
+    text-align:center;
+}
+
+.container {
+    max-width:500px;
+    margin:auto;
+    padding:20px;
+}
+
+.video-wrap video {
+    width:100%;
+    border-radius:20px;
+}
+
+/* PRICE COLOR UPDATED */
+.price {
+    font-size:28px;
+    font-weight:bold;
+    color:#b3b3b3;
+    margin:20px 0;
+}
+
+.stats {
+    background:#111;
+    padding:20px;
+    border-radius:16px;
+    border:1px solid #1a1a1a;
+}
+
+.stats-grid {
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:15px;
+}
+
+.stat-box {
+    text-align:center;
+}
+
+.stat-title {
+    font-size:10px;
+    color:#777;
+    text-transform:uppercase;
+}
+
+.stat-value {
+    font-size:16px;
+    font-weight:bold;
+}
+
+/* SPECIAL FEATURES INSIDE SAME BLOCK */
+.features {
+    margin-top:20px;
+    text-align:center;
+}
+
+.features h3 {
+    font-size:12px;
+    letter-spacing:2px;
+    color:#888;
+    margin-bottom:10px;
+}
+
+.features p {
+    font-size:14px;
+    color:#ddd;
+}
+
+/* AGENT PHOTO BIGGER */
+.agent {
+    margin-top:30px;
+}
+
+.agent img {
+    width:160px;
+    height:160px;
+    border-radius:50%;
+    object-fit:cover;
+    border:2px solid #222;
+}
+
+.owner {
+    margin-top:10px;
+    font-size:14px;
+    color:#ccc;
+}
+
+/* BUTTON */
+.btn {
+    display:block;
+    margin:25px auto;
+    padding:16px;
+    width:100%;
+    border-radius:10px;
+    background:#fff;
+    color:#0A5C1A;
+    font-weight:bold;
+    text-decoration:none;
+}
+
+/* FOOTER */
+.footer {
+    margin-top:40px;
+    font-size:10px;
+    color:#555;
+}
+</style>
 </head>
+
 <body>
+
 <div class="container">
-    <div class="property-header">
-        <h1 id="propertyNameDisplay">LOADING EXPERIENCE...</h1>
-        <div id="listingPriceDisplay">$--,---</div>
+
+    <div class="video-wrap">
+        <video src="" controls></video>
     </div>
-    <div class="video-container">
-        <video id="mainVideo" controls playsinline preload="metadata">
-            <source src="" type="video/mp4">
-            Your browser doesn't support video.
-        </video>
-    </div>
-    <div class="spec-grid">
-        <div class="spec-item"><span>Acres</span><strong id="acresDisplay">--</strong></div>
-        <div class="spec-item"><span>Sq Footage</span><strong id="sqftDisplay">--</strong></div>
-        <div class="spec-item"><span>Bedrooms</span><strong id="bedsDisplay">--</strong></div>
-        <div class="spec-item"><span>Bathrooms</span><strong id="bathsDisplay">--</strong></div>
-    </div>
-    <div class="features-box"><p id="featuresDisplay">"Experience luxury living at its finest."</p></div>
-    <div class="btn-container">
-        <a href="#" id="textBtn" class="btn-main">TEXT AGENT</a>
-        <div class="btn-split">
-            <a href="#" id="callBtn" class="btn-sub">CALL</a>
-            <button onclick="addToHome()" class="btn-sub">SAVE PAGE</button>
+
+    <div class="price">{{price}}</div>
+
+    <!-- MERGED BLOCK -->
+    <div class="stats">
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-title">Acres</div>
+                <div class="stat-value">{{acres}}</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-title">Sq Footage</div>
+                <div class="stat-value">{{sqft}}</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-title">Bedrooms</div>
+                <div class="stat-value">{{beds}}</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-title">Bathrooms</div>
+                <div class="stat-value">{{baths}}</div>
+            </div>
         </div>
+
+        <!-- SPECIAL FEATURES INSIDE -->
+        <div class="features">
+            <h3>SPECIAL FEATURES</h3>
+            <p>{{features}}</p>
+        </div>
+
     </div>
-    <div class="agent-footer">
-        <img src="" id="agentImg" class="agent-photo" style="display:none;">
-        <div class="agent-name" id="agentNameDisplay">LISTING AGENT</div>
+
+    <!-- AGENT SECTION -->
+    <div class="agent">
+        <img src="{{photo}}" alt="Agent Photo">
+        <div class="owner">{{Owner}}</div>
     </div>
+
+    <!-- UPDATED BUTTON TEXT -->
+    <a href="#" class="btn">SAVE LISTING</a>
+
+    <!-- UPDATED FOOTER -->
+    <div class="footer">
+        POWERED BY ROD2REEL<br>
+        +27 (0)68 364 4061
+    </div>
+
 </div>
 
-<script>
-    console.log('Page loaded, reading URL params...');
-    
-    const params = new URLSearchParams(window.location.search);
-    console.log('Raw params:', Object.fromEntries(params));
-    
-    // Decode all params safely
-    const getParam = (key) => {
-        try {
-            return decodeURIComponent(params.get(key) || '');
-        } catch(e) {
-            console.error('Decode error for', key, e);
-            return params.get(key) || '';
-        }
-    };
-    
-    // Load property name
-    const name = getParam('name');
-    if(name) {
-        document.getElementById('propertyNameDisplay').innerText = name;
-        console.log('Loaded name:', name);
-    }
-    
-    // Load price  
-    const price = getParam('price');
-    if(price) {
-        document.getElementById('listingPriceDisplay').innerText = price;
-        console.log('Loaded price:', price);
-    }
-    
-    // Load specs
-    document.getElementById('acresDisplay').innerText = getParam('acres') || '--';
-    document.getElementById('sqftDisplay').innerText = getParam('sqft') || '--';
-    document.getElementById('bedsDisplay').innerText = getParam('beds') || '--';
-    document.getElementById('bathsDisplay').innerText = getParam('baths') || '--';
-    
-    // Load features
-    const features = getParam('features');
-    if(features) {
-        document.getElementById('featuresDisplay').innerText = `"${features}"`;
-    }
-    
-    // Load video - MOST IMPORTANT
-    const videoUrl = getParam('video');
-    console.log('Video URL:', videoUrl);
-    if(videoUrl) {
-        const video = document.getElementById('mainVideo');
-        const source = video.querySelector('source');
-        source.src = videoUrl;
-        video.load();
-        video.play().catch(e => console.log('Autoplay blocked:', e));
-        console.log('Video loaded and playing');
-    } else {
-        console.error('NO VIDEO URL FOUND');
-    }
-    
-    // Load agent photo
-    const photo = getParam('photo');
-    if(photo) {
-        const img = document.getElementById('agentImg');
-        img.src = photo;
-        img.style.display = 'inline-block';
-    }
-    
-    // Phone links
-    const phone = getParam('phone') || '';
-    document.getElementById('textBtn').href = phone ? `sms:${phone}` : '#';
-    document.getElementById('callBtn').href = phone ? `tel:${phone}` : '#';
-    
-    function addToHome() { 
-        alert("📲 SAVE LISTING\n\n1. Tap 'Share'\n2. Select 'Add to Home Screen'"); 
-    }
-</script>
 </body>
 </html>
