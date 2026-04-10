@@ -18,21 +18,28 @@
 
         .address-top { text-align: center; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 2.5px; margin: 10px 0 20px 0; font-weight: 600; }
 
-        /* VIDEO - NO BLACK BARS */
+        /* VIDEO CONTAINER - ADDED PADDING FOR CONTROLS */
         .video-container {
             width: 100%; position: relative; background: #000; border-radius: 28px;
             overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.8);
-            border: 1px solid var(--border); line-height: 0; 
+            border: 1px solid var(--border); line-height: 0;
         }
-        video { width: 100%; height: auto; display: block; object-fit: cover; }
+        
+        /* Forces native controls to be visible and usable */
+        video { 
+            width: 100%; 
+            height: auto; 
+            display: block; 
+            object-fit: cover; 
+            background: #000;
+        }
 
-        /* BUTTON ROW DIRECTLY BELOW VIDEO */
+        /* BUTTON ROW */
         .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
         .btn { 
             display: flex; align-items: center; justify-content: center;
             height: 55px; border-radius: 14px; text-decoration: none; 
-            font-weight: 800; font-size: 12px; text-align: center;
-            /* SUBTLE GREEN/WHITE GRADIENT */
+            font-weight: 800; font-size: 11px; text-align: center;
             background: linear-gradient(135deg, #ffffff 0%, #e8f5e9 100%);
             color: #0A5C1A;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
@@ -66,7 +73,7 @@
     <div class="address-top" id="addressDisplay">LOADING...</div>
     
     <div class="video-container">
-        <video id="mainVideo" autoplay muted loop playsinline></video>
+        <video id="mainVideo" autoplay loop playsinline controls></video>
     </div>
 
     <div class="action-grid">
