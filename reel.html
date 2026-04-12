@@ -6,22 +6,20 @@
     <title>Your Reveal</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; --blue:#00D4FF; }
+        :root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; }
         body { background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; text-align: center; margin: 0; }
         #loader { height: 100vh; display: flex; justify-content: center; align-items: center; color: var(--navy); font-weight: bold; }
         #main { display: none; padding: 40px 20px; }
-        .biz-name { font-size: 24px; font-weight: 700; color: var(--navy); margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px; }
+        .biz-name { font-size: 22px; font-weight: 700; color: var(--navy); margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
         .container { max-width: 400px; margin: auto; }
-        .video-wrap { border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 25px; background: #000; line-height: 0; border: 1px solid var(--accent); }
+        .video-wrap { border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 20px; background: #000; border: 1px solid var(--accent); }
         video { width: 100%; display: block; }
         
-        .btn-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-        .btn { width: 100%; padding: 16px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; text-decoration: none; box-sizing: border-box; display: block; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
-        
-        #reviewBtn { background: var(--navy); color: #fff; border: none; display: none; }
+        .btn { width: 100%; padding: 16px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; text-decoration: none; box-sizing: border-box; display: block; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; margin-bottom: 12px; }
+        #reviewBtn { background: var(--navy); color: #fff; border: 2px solid var(--navy); display: none; }
         .btn-secondary { background: transparent; color: var(--navy); border: 2px solid var(--navy); }
 
-        #captionBox { background: #fff; padding: 18px; border-radius: 10px; border: 1px solid var(--accent); text-align: left; display: none; margin-top: 10px; }
+        #captionBox { background: #fff; padding: 18px; border-radius: 10px; border: 2px solid var(--navy); text-align: left; display: none; margin-bottom: 12px; }
         .caption-label { font-size: 9px; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 700; }
         #captionText { font-size: 14px; line-height: 1.5; color: var(--navy); }
         
@@ -30,76 +28,47 @@
     </style>
 </head>
 <body>
-
-<div id="loader">GENERATING EXPERIENCE...</div>
-
+<div id="loader">GENERATING...</div>
 <div id="main">
-    <div id="bizName" class="biz-name">ROD2REEL</div>
+    <div id="bizName" class="biz-name">YOUR VIDEO FROM ROD2REEL</div>
     <div class="container">
-        <div class="video-wrap">
-            <video id="video" controls playsinline></video>
-        </div>
-
-        <div class="btn-group">
-            <a id="reviewBtn" class="btn" target="_blank">Leave A Review</a>
-            <button class="btn btn-secondary" onclick="downloadVideo()">Download Reel</button>
-        </div>
-
+        <div class="video-wrap"><video id="video" controls playsinline></video></div>
+        <a id="reviewBtn" class="btn" target="_blank">Leave A Review</a>
         <div id="captionBox">
             <div class="caption-label">Project Details</div>
             <div id="captionText"></div>
         </div>
-
+        <button class="btn btn-secondary" onclick="downloadVideo()">Download Reel</button>
         <img id="bizLogo" alt="Logo">
         <div class="footer-main">POWERED BY ROD2REEL</div>
     </div>
 </div>
-
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
 const TOKEN = 'patODjpFQhnsR92tl.5c80e0baa73a4b2099a83fead58c6cf8ac9811041b7077f031f95d5db82e8430';
 const BASE = 'appGGs07d4FB6htwg';
 const TABLE = 'tblCYkMaAOHrX0nwN';
-
 async function load() {
     if (!id) return;
     try {
         const formula = encodeURIComponent(`OR({Video ID}="${id}", {lookupId}="${id}", {formId}="${id}")`);
-        const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}&sort[0][field]=Created&sort[0][direction]=desc`;
-        
+        const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
         const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
         const data = await res.json();
         if (!data.records || data.records.length === 0) return;
-
         const f = data.records[0].fields;
-        
-        let bizName = f['Business Name'] || f['Charter Name'] || "ROD2REEL";
-        document.getElementById('bizName').innerText = (Array.isArray(bizName) ? bizName[0] : bizName).toUpperCase();
+        let bName = f['Business Name'] || f['Charter Name'] || "ROD2REEL";
+        document.getElementById('bizName').innerText = "YOUR VIDEO FROM " + (Array.isArray(bName) ? bName[0] : bName).toUpperCase();
         document.getElementById('video').src = (f['Video URL'] || "") + "?t=" + new Date().getTime();
-
-        if (f['Caption']) {
-            document.getElementById('captionText').innerText = f['Caption'];
-            document.getElementById('captionBox').style.display = 'block';
-        }
-
+        if (f['Caption']) { document.getElementById('captionText').innerText = f['Caption']; document.getElementById('captionBox').style.display = 'block'; }
         const logoData = f['Logo'] || f['Logo URL'];
-        if (logoData) {
-            const logoImg = document.getElementById('bizLogo');
-            logoImg.src = Array.isArray(logoData) ? logoData[0].url : logoData;
-            logoImg.onload = () => { logoImg.style.display = 'block'; };
-        }
-
+        if (logoData) { const logoImg = document.getElementById('bizLogo'); logoImg.src = Array.isArray(logoData) ? logoData[0].url : logoData; logoImg.onload = () => { logoImg.style.display = 'block'; }; }
         let review = f['Review'] || f['GMB Review Link'];
-        if (review) {
-            document.getElementById('reviewBtn').href = Array.isArray(review) ? review[0] : review;
-            document.getElementById('reviewBtn').style.display = 'block';
-        }
-
+        if (review) { document.getElementById('reviewBtn').href = Array.isArray(review) ? review[0] : review; document.getElementById('reviewBtn').style.display = 'block'; }
         document.getElementById('loader').style.display = 'none';
         document.getElementById('main').style.display = 'block';
     } catch (e) { console.error(e); }
 }
-
 function downloadVideo() { 
     let url = document.getElementById('video').src.split('?')[0];
     if (url && url.includes('cloudinary')) url = url.replace('/upload/', '/upload/fl_attachment/');
