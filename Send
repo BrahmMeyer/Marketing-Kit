@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Go — Rod2Reel Dispatch</title>
+<title>Dispatch — Rod2Reel</title>
 <style>
 :root { --navy: #0A192F; --pearl: #FDFBF7; --border: #E2E8F0; }
 body{background:var(--pearl); color:var(--navy); font-family:sans-serif; text-align:center; padding:40px; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height: 100vh; margin:0;}
@@ -17,7 +17,7 @@ input{padding:14px; width:100%; border-radius: 8px; border: 1px solid var(--bord
 <body>
 <div class="card">
     <h2>Dispatch Reel 🎥</h2>
-    <input id="input" placeholder="Client Phone or Email" autocomplete="off">
+    <input id="input" type="tel" placeholder="Client Mobile" autocomplete="off">
     <button class="btn" onclick="send('whatsapp')">WhatsApp Reveal</button>
     <button class="btn btn-alt" onclick="send('email')">Email Reveal</button>
 </div>
@@ -27,13 +27,13 @@ function send(type) {
     const val = document.getElementById('input').value.trim();
     if(!val) return;
     const link = `https://go.rod2reel.com/reel.html?id=${id}`;
-    const msg = `Your highlight reel is ready! 🎬 View the transformation here: ${link}`;
+    const msg = `Your project reveal is ready! 🎬 View it here: ${link}`;
     if (type === 'whatsapp') {
         let phone = val.replace(/\D/g, '');
         if (phone.startsWith('0') && phone.length === 10) phone = '27' + phone.substring(1);
         window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-    } else if (type === 'email') {
-        window.location.href = `mailto:${val}?subject=Your Reveal is Ready&body=${encodeURIComponent(msg)}`;
+    } else {
+        window.location.href = `mailto:${val}?subject=Your Video Reveal&body=${encodeURIComponent(msg)}`;
     }
 }
 </script>
