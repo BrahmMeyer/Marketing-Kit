@@ -1,140 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Property Showcase</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        :root { --glass: rgba(255, 255, 255, 0.12); --border: rgba(255, 255, 255, 0.18); }
-        * { box-sizing: border-box; }
-        body, html { margin: 0; padding: 0; background: #000; font-family: 'Inter', sans-serif; color: white; width: 100%; overflow-x: hidden; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎬 Your Reel is Ready</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { 
+    --navy: #0A192F; 
+    --accent: #112240;
+    --pearl: #FDFBF7; 
+    --border: #E2E8F0; 
+    --text: #0A192F; 
+    --grey: #718096; 
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--pearl);color:var(--text);font-family:'DM Sans',sans-serif;text-align:center;}
+#loader{height:100vh;display:flex;justify-content:center;align-items:center;color:var(--navy);}
+#main{display:none;padding:60px 20px;}
+.biz-name{font-family:'Bebas Neue'; font-size:48px; color:var(--navy); margin-bottom:30px; letter-spacing:2px;}
+.container{max-width:480px; margin:auto;}
+.video-wrap{border-radius:24px; overflow:hidden; border:1px solid var(--border); margin-bottom:25px; background:#000; box-shadow: 0 10px 30px rgba(0,0,0,0.05);}
+video{width:100%; display:block;}
 
-        /* BLUR BG */
-        .bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
-        #bgBlur { width: 120%; height: 120%; background-size: cover; background-position: center; filter: blur(60px) brightness(0.35); transform: translate(-10%, -10%); }
+.btn{width:100%; padding:18px; border-radius:12px; font-weight:bold; font-size:15px; margin-bottom:15px; cursor:pointer; text-decoration:none; display:inline-block; border:2px solid var(--navy); text-transform:uppercase; letter-spacing:1.5px; transition: 0.3s;}
 
-        .container { width: 100%; max-width: 480px; margin: 0 auto; padding: 15px; }
+#reviewBtn { background: var(--navy); color: #fff; border: none; box-shadow: 0 4px 15px rgba(10, 25, 47, 0.2); }
+#reviewBtn:hover { background: var(--accent); }
 
-        .address-top { text-align: center; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 2.5px; margin: 10px 0 20px 0; font-weight: 600; }
+/* Caption Box */
+.caption-box { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 25px; text-align: left; }
+.caption-label { font-size: 10px; font-weight: 800; color: var(--grey); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
+.caption-text { font-size: 14px; line-height: 1.5; color: var(--navy); }
 
-        /* VIDEO CONTAINER */
-        .video-container {
-            width: 100%; position: relative; background: #000; border-radius: 28px;
-            overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.8);
-            border: 1px solid var(--border); line-height: 0; 
-        }
-        video { width: 100%; height: auto; display: block; object-fit: cover; }
+.btn-secondary { background: transparent; color: var(--navy); }
+.btn-secondary:hover { background: rgba(10, 25, 47, 0.05); }
 
-        /* ACTION GRID (3 BUTTONS) */
-        .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
-        .btn { 
-            display: flex; align-items: center; justify-content: center;
-            height: 50px; border-radius: 12px; text-decoration: none; 
-            font-weight: 800; font-size: 10px; text-align: center;
-            background: linear-gradient(135deg, #ffffff 0%, #e8f5e9 100%);
-            color: #0A5C1A;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.4);
-            text-transform: uppercase;
-        }
-
-        /* SAVE LISTING (SUBTLE SECONDARY) */
-        .btn-save {
-            display: flex; align-items: center; justify-content: center;
-            width: 100%; height: 55px; border-radius: 14px; text-decoration: none;
-            font-weight: 800; font-size: 14px; margin-top: 10px;
-            background: var(--glass); color: #fff; border: 1px solid var(--border);
-            backdrop-filter: blur(10px);
-        }
-
-        .info-card {
-            background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-radius: 24px; border: 1px solid var(--border);
-            padding: 24px; margin: 25px 0; text-align: center;
-        }
-        .price { font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 20px; }
-
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .stat-box { background: rgba(0,0,0,0.3); padding: 12px 2px; border-radius: 12px; border: 1px solid var(--border); }
-        .stat-label { font-size: 8px; color: #999; text-transform: uppercase; margin-bottom: 4px; display: block; }
-        .stat-val { font-size: 13px; font-weight: 700; }
-
-        .agent-section { text-align: center; margin: 30px 0; }
-        .agent-img { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; margin-bottom: 12px; }
-        .owner-name { font-size: 15px; font-weight: 400; color: #bbb; margin: 0; }
-        
-        .footer { margin: 60px 0; text-align: center; font-size: 10px; color: #555; letter-spacing: 1px; }
-    </style>
+#bizLogo { max-height: 120px; max-width: 90%; width: auto; margin: 40px auto 15px; display: none; opacity: 0.8; } 
+.footer { margin-top: 10px; padding-top: 0; border-top: none; }
+.footer-main { font-size: 11px; color: var(--grey); letter-spacing: 3px; font-weight: bold; text-transform: uppercase; }
+</style>
 </head>
 <body>
 
-<div class="bg-container"><div id="bgBlur"></div></div>
+<div id="loader"><h1>GENERATING EXPERIENCE...</h1></div>
 
-<div class="container">
-    <div class="address-top" id="addressDisplay">LOADING...</div>
-    
-    <div class="video-container">
-        <video id="mainVideo" autoplay loop playsinline controls></video>
-    </div>
+<div id="main">
+    <div id="bizName" class="biz-name">BUSINESS</div>
 
-    <div class="action-grid">
-        <a href="" id="callBtn" class="btn">CALL AGENT</a>
-        <a href="" id="textBtn" class="btn">TEXT AGENT</a>
-        <a href="" id="galleryBtn" class="btn">VIEW GALLERY</a>
-    </div>
+    <div class="container">
+        <div class="video-wrap">
+            <video id="video" controls playsinline></video>
+        </div>
 
-    <a href="#" class="btn-save">SAVE LISTING</a>
+        <a id="reviewBtn" class="btn" style="display:none;">Leave Us A Review ⭐</a>
 
-    <div class="info-card">
-        <div class="price" id="priceDisplay">$0</div>
-        <div class="stats-grid">
-            <div class="stat-box"><span class="stat-label">Acres</span><span id="acresDisplay" class="stat-val">--</span></div>
-            <div class="stat-box"><span class="stat-label">SqFt</span><span id="sqftDisplay" class="stat-val">--</span></div>
-            <div class="stat-box"><span class="stat-label">Beds</span><span id="bedsDisplay" class="stat-val">--</span></div>
-            <div class="stat-box"><span class="stat-label">Baths</span><span id="bathsDisplay" class="stat-val">--</span></div>
+        <div class="caption-box" id="captionBox" style="display:none;">
+            <span class="caption-label">Project Details 📝</span>
+            <div class="caption-text" id="captionText"></div>
+        </div>
+
+        <button class="btn btn-secondary" onclick="downloadVideo()">⬇️ Download Video</button>
+
+        <img id="bizLogo" alt="Business Logo">
+
+        <div class="footer">
+            <div class="footer-main">POWERED BY ROD2REEL 🎣</div>
         </div>
     </div>
-
-    <div class="agent-section">
-        <img src="" id="agentPhoto" class="agent-img">
-        <p class="owner-name" id="ownerDisplay">Agent Name</p>
-    </div>
-
-    <div class="footer">POWERED BY ROD2REEL<br>+27 (0)68 364 4061</div>
 </div>
 
 <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const phone = urlParams.get('phone') || '';
-    const address = decodeURIComponent(urlParams.get('address') || '');
-    const gallery = decodeURIComponent(urlParams.get('gallery') || '');
+const id = new URLSearchParams(window.location.search).get('id');
+const TOKEN = 'patODjpFQhnsR92tl.5c80e0baa73a4b2099a83fead58c6cf8ac9811041b7077f031f95d5db82e8430';
+const BASE = 'appGGs07d4FB6htwg';
+const TABLE = 'tblCYkMaAOHrX0nwN';
 
-    document.getElementById('addressDisplay').innerText = address || 'PROPERTY HIGHLIGHT';
-    document.getElementById('priceDisplay').innerText = decodeURIComponent(urlParams.get('price') || '');
-    document.getElementById('acresDisplay').innerText = urlParams.get('acres') || '--';
-    document.getElementById('sqftDisplay').innerText = urlParams.get('sqft') || '--';
-    document.getElementById('bedsDisplay').innerText = urlParams.get('beds') || '--';
-    document.getElementById('bathsDisplay').innerText = urlParams.get('baths') || '--';
-    document.getElementById('ownerDisplay').innerText = decodeURIComponent(urlParams.get('owner') || '');
+async function load() {
+    if (!id) return;
+    try {
+        const formula = encodeURIComponent(`OR(FIND("${id}", ARRAYJOIN({lookupId})), {formId}="${id}", {Video ID}="${id}")`);
+        const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}&sort[0][field]=Created&sort[0][direction]=desc`;
+        
+        const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
+        const data = await res.json();
+        if (!data.records || data.records.length === 0) return;
+        const f = data.records[0].fields;
+        
+        document.getElementById('bizName').innerText = (f['Charter Name'] || "ROD2REEL").toUpperCase();
+        document.getElementById('video').src = (f['Video URL'] || "") + "?t=" + new Date().getTime();
 
-    if(phone) {
-        document.getElementById('callBtn').href = `tel:${phone}`;
-        document.getElementById('textBtn').href = `sms:${phone}&body=Hi! I just saw the video for ${address}. Can I get more info?`;
-    }
-    
-    if(gallery) {
-        document.getElementById('galleryBtn').href = gallery;
-    }
+        if(f['Special Features']) {
+            document.getElementById('captionText').innerText = f['Special Features'];
+            document.getElementById('captionBox').style.display = 'block';
+        }
 
-    const videoUrl = decodeURIComponent(urlParams.get('video') || '');
-    if(videoUrl) {
-        document.getElementById('mainVideo').src = videoUrl;
-        document.getElementById('bgBlur').style.backgroundImage = `url(${videoUrl.replace('.mp4', '.jpg')})`;
+        if (f['Review']) {
+            document.getElementById('reviewBtn').href = f['Review'];
+            document.getElementById('reviewBtn').style.display = 'block';
+        }
+
+        if (f['Logo']) {
+            const logoImg = document.getElementById('bizLogo');
+            logoImg.src = Array.isArray(f['Logo']) ? f['Logo'][0].url : f['Logo'];
+            logoImg.onload = () => { logoImg.style.display = 'block'; };
+        }
+
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('main').style.display = 'block';
+    } catch (e) { console.error(e); }
+}
+
+function downloadVideo() { 
+    let url = document.getElementById('video').src.split('?')[0];
+    if (url && url.includes('cloudinary')) url = url.replace('/upload/', '/upload/fl_attachment/');
+    if(url){
+        const a = document.createElement('a'); a.href = url; a.download = "reel.mp4"; a.click();
     }
-    const photoUrl = decodeURIComponent(urlParams.get('photo') || '');
-    if(photoUrl) { document.getElementById('agentPhoto').src = photoUrl; }
+}
+load();
 </script>
-
 </body>
 </html>
