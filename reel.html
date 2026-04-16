@@ -11,7 +11,6 @@
         #loader { height: 100vh; display: flex; justify-content: center; align-items: center; color: var(--navy); font-weight: bold; }
         #main { display: none; padding: 40px 20px; }
         
-        /* Updated: Clean, Bold, Universal Heading */
         .biz-name { 
             font-size: 24px; 
             font-weight: 900; 
@@ -54,6 +53,9 @@
 
         <button class="btn btn-secondary" onclick="downloadVideo()">Download Reel</button>
 
+        <!-- NEW SHARE BUTTON -->
+        <a id="shareBtn" class="btn btn-secondary">Share</a>
+
         <img id="bizLogo" alt="Logo">
         <div class="footer-main">POWERED BY ROD2REEL</div>
     </div>
@@ -61,10 +63,11 @@
 
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
-// Note: Tokens should ideally be handled via a proxy for production security
-const TOKEN = 'patODjpFQhnsR92tl.5c80e0baa73a4b2099a83fead58c6cf8ac9811041b7077f031f95d5db82e8430';
+const TOKEN = 'YOUR_TOKEN';
 const BASE = 'appGGs07d4FB6htwg';
 const TABLE = 'tblCYkMaAOHrX0nwN';
+
+let charterName = "My Stay";
 
 async function load() {
     if (!id) return;
@@ -77,9 +80,13 @@ async function load() {
         if (!data.records || data.records.length === 0) return;
         const f = data.records[0].fields;
 
-        // Logic: Pull from 'Business Name' or 'Charter Name', default to 'PRO STUDIO'
         let bName = f['Business Name'] || f['Charter Name'] || "PRO STUDIO";
-        document.getElementById('bizName').innerText = (Array.isArray(bName) ? bName[0] : bName).toUpperCase();
+        charterName = Array.isArray(bName) ? bName[0] : bName;
+
+        document.getElementById('bizName').innerText = charterName.toUpperCase();
+
+        // SET PAGE TITLE (for WhatsApp preview)
+        document.title = `${charterName} Video`;
 
         document.getElementById('video').src = (f['Video URL'] || "") + "?t=" + new Date().getTime();
 
@@ -101,6 +108,9 @@ async function load() {
             document.getElementById('reviewBtn').style.display = 'block';
         }
 
+        // SET SHARE BUTTON LINK
+        document.getElementById('shareBtn').href = `https://delivery.rod2reel.com/send.html?id=${id}&name=${encodeURIComponent(charterName)}`;
+
         document.getElementById('loader').style.display = 'none';
         document.getElementById('main').style.display = 'block';
     } catch (e) { 
@@ -111,7 +121,8 @@ async function load() {
 function downloadVideo() {
     let url = document.getElementById('video').src.split('?')[0];
     if (url && url.includes('cloudinary')) {
-        url = url.replace('/upload/', '/upload/fl_attachment/');
+        const cleanName = `${charterName} Stay`.replace(/\s+/g, '_');
+        url = url.replace('/upload/', `/upload/fl_attachment:${cleanName}/`);
     }
     window.open(url, '_blank');
 }
