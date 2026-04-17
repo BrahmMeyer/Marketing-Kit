@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Your Video</title>
 
-<!-- WhatsApp Preview -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="Your Stay Video">
 <meta property="og:description" content="Your stay, captured in a short highlight reel.">
@@ -17,21 +16,23 @@
 
 <style>
 :root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; }
-body { background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; text-align: center; margin: 0; }
+body { background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; text-align: center; margin: 0; padding: 20px; box-sizing: border-box; }
 #loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; }
-#main { display: none; padding: 40px 20px; }
+#main { display: none; padding: 20px 0; }
 
 .biz-name { font-size: 24px; font-weight: 900; margin-bottom: 25px; text-transform: uppercase; }
 
-.container { max-width: 400px; margin: auto; }
-.video-wrap { border-radius: 16px; overflow: hidden; margin-bottom: 20px; background: #000; border: 1px solid var(--accent); }
+.container { max-width: 350px; margin: auto; display: flex; flex-direction: column; align-items: center; }
+.video-wrap { width: 100%; border-radius: 16px; overflow: hidden; margin-bottom: 20px; background: #000; border: 1px solid var(--accent); }
 video { width: 100%; display: block; }
 
-.btn { width: 100%; padding: 16px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; display: block; text-transform: uppercase; margin-bottom: 12px; }
+/* Fixed widths and removed underlines */
+.btn { width: 100%; box-sizing: border-box; padding: 16px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; display: block; text-transform: uppercase; margin-bottom: 12px; text-decoration: none; transition: 0.2s; }
 #reviewBtn { background: var(--navy); color: #fff; border: 2px solid var(--navy); display: none; }
 .btn-secondary { background: transparent; color: var(--navy); border: 2px solid var(--navy); }
+.btn:hover { opacity: 0.8; }
 
-.footer-main { font-size: 9px; margin-top: 20px; text-transform: uppercase; }
+.footer-main { font-size: 9px; margin-top: 20px; text-transform: uppercase; letter-spacing: 1px; }
 </style>
 </head>
 
@@ -40,29 +41,25 @@ video { width: 100%; display: block; }
 <div id="loader">GENERATING...</div>
 
 <div id="main">
-<div id="bizName" class="biz-name"></div>
+    <div id="bizName" class="biz-name"></div>
 
-<div class="container">
+    <div class="container">
+        <div class="video-wrap">
+            <video id="video" controls playsinline></video>
+        </div>
 
-<div class="video-wrap">
-<video id="video" controls playsinline></video>
-</div>
+        <a id="reviewBtn" class="btn" target="_blank">Leave A Review</a>
 
-<a id="reviewBtn" class="btn" target="_blank">Leave A Review</a>
+        <button class="btn btn-secondary" onclick="downloadVideo()">Download Reel</button>
 
-<button class="btn btn-secondary" onclick="downloadVideo()">Download Reel</button>
+        <a id="shareBtn" class="btn btn-secondary">Share</a>
 
-<!-- ✅ NEW SHARE BUTTON -->
-<a id="shareBtn" class="btn btn-secondary">Share</a>
-
-<div class="footer-main">POWERED BY ROD2REEL</div>
-
-</div>
+        <div class="footer-main">POWERED BY ROD2REEL</div>
+    </div>
 </div>
 
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
-
 const TOKEN = 'patODjpFQhnsR92tl.5c80e0baa73a4b2099a83fead58c6cf8ac9811041b7077f031f95d5db82e8430';
 const BASE = 'appGGs07d4FB6htwg';
 const TABLE = 'tblCYkMaAOHrX0nwN';
@@ -74,45 +71,33 @@ function setMeta(name, content) {
 
 async function load() {
     if (!id) return;
-
     const formula = encodeURIComponent(`OR({Video ID}="${id}", {lookupId}="${id}")`);
     const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
 
     const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
     const data = await res.json();
-
     if (!data.records.length) return;
 
     const f = data.records[0].fields;
-
     let name = f['Charter Name'] || "Your Stay";
     name = Array.isArray(name) ? name[0] : name;
-
     document.getElementById('bizName').innerText = name.toUpperCase();
 
     const videoUrl = f['Video URL'];
     document.getElementById('video').src = videoUrl;
 
-    // Thumbnail with play overlay
-    let thumb = videoUrl
-        .replace('/upload/', '/upload/so_0,l_play-button,fl_layer_apply/')
-        .replace('.mp4', '.jpg');
-
+    let thumb = videoUrl.replace('/upload/', '/upload/so_0,l_play-button,fl_layer_apply/').replace('.mp4', '.jpg');
     setMeta("og:title", name + " Video");
-    setMeta("og:description", "Your stay, captured in a short highlight reel.");
     setMeta("og:image", thumb);
     setMeta("og:url", window.location.href);
 
-    // Review button
     let review = f['Review'] || f['GMB Review Link'];
     if (review) {
         document.getElementById('reviewBtn').href = Array.isArray(review) ? review[0] : review;
         document.getElementById('reviewBtn').style.display = 'block';
     }
 
-    // ✅ Share button link
-    document.getElementById('shareBtn').href = `https://delivery.rod2reel.com/send.html?id=${id}`;
-
+    document.getElementById('shareBtn').href = `send.html?id=${id}`;
     document.getElementById('loader').style.display = 'none';
     document.getElementById('main').style.display = 'block';
 }
