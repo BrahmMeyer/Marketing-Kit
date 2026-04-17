@@ -29,34 +29,35 @@ body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--nav
 
 #main { 
     display: none; 
-    height: 100vh; 
+    height: 100%; /* Changed from 100vh for better mobile browser handling */
+    min-height: -webkit-fill-available;
     flex-direction: column; 
     padding: 15px 20px; 
     max-width: 400px; 
     margin: 0 auto;
     text-align: center;
+    justify-content: space-between; /* Pushes content to the edges to remove gaps */
 }
 
 .biz-name { 
     font-size: 18px; 
     font-weight: 900; 
-    margin-bottom: 10px; 
+    margin-bottom: 5px; 
     text-transform: uppercase; 
     flex-shrink: 0;
-    width: 100%;
 }
 
 .content-area {
-    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
     gap: 8px;
+    flex-grow: 1; /* Allows this middle section to take up available space */
 }
 
 .video-wrap { 
     width: 100%; 
-    max-height: 50vh; 
+    max-height: 52vh; /* Slightly increased for better fill */
     border-radius: 12px; 
     overflow: hidden; 
     background: #000; 
@@ -64,13 +65,14 @@ body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--nav
     display: flex;
     align-items: center;
 }
-video { width: 100%; max-height: 50vh; object-fit: contain; display: block; }
+video { width: 100%; max-height: 52vh; object-fit: contain; display: block; }
 
 .video-hint {
     font-size: 10px;
     font-weight: 700;
     color: var(--navy);
     opacity: 0.8;
+    margin-top: 5px;
     margin-bottom: 5px;
     letter-spacing: 0.5px;
 }
@@ -80,7 +82,7 @@ video { width: 100%; max-height: 50vh; object-fit: contain; display: block; }
     padding: 14px; 
     border-radius: 10px; 
     font-weight: 700; 
-    font-size: 13px; 
+    font-size: 14px; /* Set to your preferred 14px */
     cursor: pointer; 
     display: block; 
     text-transform: uppercase; 
@@ -100,8 +102,6 @@ video { width: 100%; max-height: 50vh; object-fit: contain; display: block; }
     background: var(--blue-grad); 
     color: #fff; 
 }
-
-.btn:hover { opacity: 0.9; }
 
 .footer-main { 
     font-size: 8px; 
