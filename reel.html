@@ -1,64 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your Video</title>
-
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
-
-<style>
-:root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; }
-body { background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; text-align: center; margin: 0; }
-
-#loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; }
-#main { display: none; padding: 40px 20px; }
-
-.biz-name { font-size: 24px; font-weight: 900; margin-bottom: 25px; text-transform: uppercase; }
-
-.container { max-width: 400px; margin: auto; }
-
-.video-wrap { border-radius: 16px; overflow: hidden; background: #000; border: 1px solid var(--accent); margin-bottom: 20px; }
-video { width: 100%; }
-
-.btn {
-width: 100%;
-padding: 16px;
-border-radius: 10px;
-font-weight: 700;
-font-size: 14px;
-cursor: pointer;
-text-decoration: none;
-display: block;
-text-transform: uppercase;
-margin-bottom: 12px;
-}
-
-#reviewBtn { background: var(--navy); color: #fff; display:none; }
-.btn-secondary { border:2px solid var(--navy); background:transparent; }
-
-.footer-main { font-size: 9px; margin-top: 20px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Video</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; }
+        body { background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; text-align: center; margin: 0; }
+        #loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+        #main { display: none; padding: 40px 20px; }
+        .biz-name { font-size: 24px; font-weight: 900; margin-bottom: 25px; text-transform: uppercase; }
+        .container { max-width: 400px; margin: auto; }
+        .video-wrap { border-radius: 16px; overflow: hidden; background: #000; border: 1px solid var(--accent); margin-bottom: 20px; }
+        video { width: 100%; }
+        .btn { width: 100%; padding: 16px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; text-decoration: none; display: block; text-transform: uppercase; margin-bottom: 12px; }
+        #reviewBtn { background: var(--navy); color: #fff; display:none; }
+        .btn-secondary { border:2px solid var(--navy); background:transparent; }
+        .footer-main { font-size: 9px; margin-top: 20px; }
+    </style>
 </head>
-
 <body>
 
 <div id="loader">GENERATING...</div>
 
 <div id="main">
     <div id="bizName" class="biz-name"></div>
-
     <div class="container">
         <div class="video-wrap">
             <video id="video" controls playsinline></video>
         </div>
-
         <a id="reviewBtn" class="btn" target="_blank">Leave A Review</a>
-
         <button class="btn btn-secondary" onclick="downloadVideo()">Download Reel</button>
-
         <a id="shareBtn" class="btn btn-secondary">Share</a>
-
         <div class="footer-main">POWERED BY ROD2REEL</div>
     </div>
 </div>
@@ -73,7 +47,7 @@ const TABLE = 'YOUR_TABLE';
 async function load() {
     if (!id) return;
 
-    const formula = encodeURIComponent(`{Video ID}="${id}"`);
+    const formula = encodeURIComponent(`OR({Video ID}="${id}", {formId}="${id}")`);
     const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
 
     const res = await fetch(url, {
@@ -91,7 +65,6 @@ async function load() {
 
     let name = f['Charter Name'] || "Your Stay";
     if (Array.isArray(name)) name = name[0];
-
     document.getElementById('bizName').innerText = name.toUpperCase();
 
     const videoUrl = f['Video URL'];
@@ -105,7 +78,6 @@ async function load() {
     }
 
     document.getElementById('shareBtn').href = `send.html?id=${id}`;
-
     document.getElementById('loader').style.display = 'none';
     document.getElementById('main').style.display = 'block';
 }
@@ -118,6 +90,5 @@ function downloadVideo() {
 
 load();
 </script>
-
 </body>
 </html>
