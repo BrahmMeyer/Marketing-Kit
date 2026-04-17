@@ -1,56 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Video</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Video</title>
 
-    <!-- WhatsApp Preview -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Your Stay Video">
-    <meta property="og:description" content="Your stay, captured in a short highlight reel.">
-    <meta property="og:image" content="">
-    <meta property="og:url" content="">
-    <meta property="og:site_name" content="Rod2Reel">
+<!-- WhatsApp Preview -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Your Stay Video">
+<meta property="og:description" content="Your stay, captured in a short highlight reel.">
+<meta property="og:image" content="">
+<meta property="og:url" content="">
+<meta property="og:site_name" content="Rod2Reel">
 
-    <meta name="twitter:card" content="summary_large_image">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; }
+body { background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; text-align: center; margin: 0; }
+#loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+#main { display: none; padding: 40px 20px; }
 
-    <style>
-        :root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; }
-        body { background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; text-align: center; margin: 0; }
-        #loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; }
-        #main { display: none; padding: 40px 20px; }
+.biz-name { font-size: 24px; font-weight: 900; margin-bottom: 25px; text-transform: uppercase; }
 
-        .biz-name { font-size: 24px; font-weight: 900; margin-bottom: 25px; text-transform: uppercase; }
+.container { max-width: 400px; margin: auto; }
+.video-wrap { border-radius: 16px; overflow: hidden; margin-bottom: 20px; background: #000; border: 1px solid var(--accent); }
+video { width: 100%; display: block; }
 
-        .container { max-width: 400px; margin: auto; }
-        .video-wrap { border-radius: 16px; overflow: hidden; margin-bottom: 20px; background: #000; border: 1px solid var(--accent); }
-        video { width: 100%; display: block; }
+.btn { width: 100%; padding: 16px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; display: block; text-transform: uppercase; margin-bottom: 12px; }
+#reviewBtn { background: var(--navy); color: #fff; border: 2px solid var(--navy); display: none; }
+.btn-secondary { background: transparent; color: var(--navy); border: 2px solid var(--navy); }
 
-        .btn { width: 100%; padding: 16px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; display: block; text-transform: uppercase; margin-bottom: 12px; }
-        .btn-secondary { background: transparent; border: 2px solid var(--navy); }
-
-        .footer-main { font-size: 9px; margin-top: 20px; text-transform: uppercase; }
-    </style>
+.footer-main { font-size: 9px; margin-top: 20px; text-transform: uppercase; }
+</style>
 </head>
 
 <body>
+
 <div id="loader">GENERATING...</div>
 
 <div id="main">
-    <div id="bizName" class="biz-name"></div>
-    
-    <div class="container">
-        <div class="video-wrap">
-            <video id="video" controls playsinline></video>
-        </div>
+<div id="bizName" class="biz-name"></div>
 
-        <button class="btn btn-secondary" onclick="downloadVideo()">Download Reel</button>
+<div class="container">
 
-        <div class="footer-main">POWERED BY ROD2REEL</div>
-    </div>
+<div class="video-wrap">
+<video id="video" controls playsinline></video>
+</div>
+
+<a id="reviewBtn" class="btn" target="_blank">Leave A Review</a>
+
+<button class="btn btn-secondary" onclick="downloadVideo()">Download Reel</button>
+
+<!-- ✅ NEW SHARE BUTTON -->
+<a id="shareBtn" class="btn btn-secondary">Share</a>
+
+<div class="footer-main">POWERED BY ROD2REEL</div>
+
+</div>
 </div>
 
 <script>
@@ -96,6 +103,16 @@ async function load() {
     setMeta("og:image", thumb);
     setMeta("og:url", window.location.href);
 
+    // Review button
+    let review = f['Review'] || f['GMB Review Link'];
+    if (review) {
+        document.getElementById('reviewBtn').href = Array.isArray(review) ? review[0] : review;
+        document.getElementById('reviewBtn').style.display = 'block';
+    }
+
+    // ✅ Share button link
+    document.getElementById('shareBtn').href = `https://delivery.rod2reel.com/send.html?id=${id}`;
+
     document.getElementById('loader').style.display = 'none';
     document.getElementById('main').style.display = 'block';
 }
@@ -108,5 +125,6 @@ function downloadVideo() {
 
 load();
 </script>
+
 </body>
 </html>
