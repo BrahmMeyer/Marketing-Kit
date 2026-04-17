@@ -67,11 +67,12 @@ body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--nav
 video { width: 100%; max-height: 50vh; object-fit: contain; display: block; }
 
 .video-hint {
-    font-size: 11px;
-    font-weight: 500;
+    font-size: 10px;
+    font-weight: 700;
     color: var(--navy);
-    opacity: 0.7;
+    opacity: 0.8;
     margin-bottom: 5px;
+    letter-spacing: 0.5px;
 }
 
 .btn { 
@@ -89,21 +90,18 @@ video { width: 100%; max-height: 50vh; object-fit: contain; display: block; }
     border: none;
 }
 
-/* Yellow Review Button */
 #reviewBtn { 
     background: var(--yellow); 
     color: #000; 
     display: none; 
 }
 
-/* Blue Gradient Buttons */
 .btn-grad { 
     background: var(--blue-grad); 
     color: #fff; 
-    box-shadow: 0 4px 15px rgba(10, 25, 47, 0.2);
 }
 
-.btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn:hover { opacity: 0.9; }
 
 .footer-main { 
     font-size: 8px; 
@@ -128,10 +126,9 @@ video { width: 100%; max-height: 50vh; object-fit: contain; display: block; }
             <video id="video" playsinline controls></video>
         </div>
 
-        <div class="video-hint">TAP VIDEO TO ENLARGE WHEN PLAYING</div>
+        <div class="video-hint">PREVIEW - PRESS ENLARGE TO VIEW ORIGINAL SIZE</div>
 
         <a id="reviewBtn" class="btn" target="_blank">Leave Us A Review</a>
-        
         <button class="btn btn-grad" onclick="downloadVideo()">Download Reel</button>
         <a id="shareBtn" class="btn btn-grad">Share</a>
     </div>
@@ -146,16 +143,6 @@ const BASE = 'appGGs07d4FB6htwg';
 const TABLE = 'tblCYkMaAOHrX0nwN';
 
 const videoElement = document.getElementById('video');
-
-videoElement.addEventListener('click', function() {
-    if (!videoElement.paused) {
-        if (videoElement.requestFullscreen) {
-            videoElement.requestFullscreen();
-        } else if (videoElement.webkitEnterFullscreen) {
-            videoElement.webkitEnterFullscreen();
-        }
-    }
-});
 
 function setMeta(name, content) {
     let el = document.querySelector(`meta[property="${name}"]`);
