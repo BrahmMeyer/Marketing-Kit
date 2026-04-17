@@ -1,109 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Your Video</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <style>
-        :root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; --yellow:#FFD700; --blue-grad: linear-gradient(135deg, #0A192F 0%, #0047AB 100%); }
-        * { box-sizing: border-box; }
-        body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; overflow: hidden; }
-        #loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; }
-        #main { display: none; height: 100%; min-height: -webkit-fill-available; flex-direction: column; padding: 10px 20px; max-width: 400px; margin: 0 auto; text-align: center; }
-        .biz-name { font-size: 18px; font-weight: 900; margin: 10px 0; text-transform: uppercase; flex-shrink: 0; }
-        .content-area { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
-        .video-wrap { width: 100%; flex-grow: 1; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid var(--accent); display: flex; align-items: center; position: relative; }
-        video { width: 100%; height: 100%; max-height: 100%; object-fit: contain; display: block; }
-        .video-hint { font-size: 10px; font-weight: 700; color: var(--navy); opacity: 0.8; margin: 10px 0; letter-spacing: 0.5px; flex-shrink: 0; }
-        .button-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; flex-shrink: 0; }
-        .btn { width: 100%; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; display: block; text-transform: uppercase; text-decoration: none; transition: 0.2s; text-align: center; border: none; }
-        #reviewBtn { background: var(--yellow); color: #000; display: none; }
-        .btn-grad { background: var(--blue-grad); color: #fff; }
-        .footer-main { font-size: 8px; padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; flex-shrink: 0; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Video</title>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; }
+body { background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; text-align: center; margin: 0; }
+
+#loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+#main { display: none; padding: 40px 20px; }
+
+.biz-name { font-size: 24px; font-weight: 900; margin-bottom: 25px; text-transform: uppercase; }
+
+.container { max-width: 400px; margin: auto; }
+
+.video-wrap { border-radius: 16px; overflow: hidden; background: #000; border: 1px solid var(--accent); margin-bottom: 20px; }
+video { width: 100%; }
+
+.btn {
+width: 100%;
+padding: 16px;
+border-radius: 10px;
+font-weight: 700;
+font-size: 14px;
+cursor: pointer;
+text-decoration: none;
+display: block;
+text-transform: uppercase;
+margin-bottom: 12px;
+}
+
+#reviewBtn { background: var(--navy); color: #fff; display:none; }
+.btn-secondary { border:2px solid var(--navy); background:transparent; }
+
+.footer-main { font-size: 9px; margin-top: 20px; }
+</style>
 </head>
+
 <body>
 
 <div id="loader">GENERATING...</div>
 
 <div id="main">
     <div id="bizName" class="biz-name"></div>
-    <div class="content-area">
+
+    <div class="container">
         <div class="video-wrap">
-            <video id="video" playsinline controls></video>
+            <video id="video" controls playsinline></video>
         </div>
-        <div class="video-hint">PREVIEW - PRESS ENLARGE TO VIEW ORIGINAL SIZE</div>
-        <div class="button-group">
-            <a id="reviewBtn" class="btn" target="_blank">Leave Us A Review</a>
-            <button class="btn btn-grad" onclick="downloadVideo()">Download Reel</button>
-            <a id="shareBtn" class="btn btn-grad">Share</a>
-        </div>
+
+        <a id="reviewBtn" class="btn" target="_blank">Leave A Review</a>
+
+        <button class="btn btn-secondary" onclick="downloadVideo()">Download Reel</button>
+
+        <a id="shareBtn" class="btn btn-secondary">Share</a>
+
+        <div class="footer-main">POWERED BY ROD2REEL</div>
     </div>
-    <div class="footer-main">POWERED BY ROD2REEL</div>
 </div>
 
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
-const TOKEN = 'patN1QvygDdKNlLG3.550efc0913e840069b3dbb5fd7cecdc19074b7d813b5320469fe8ddf91b67411';
-const BASE = 'app3pbcDqGLbnMq7b'; 
-const TABLE = 'tblJ2WEQiArPfdowy'; 
 
-const videoElement = document.getElementById('video');
+const TOKEN = 'YOUR_TOKEN';
+const BASE = 'YOUR_BASE';
+const TABLE = 'YOUR_TABLE';
 
 async function load() {
-    if (!id) {
-        document.getElementById('loader').innerText = "NO ID PROVIDED";
-        return;
-    }
-    
-    const formula = encodeURIComponent(`OR({Video ID}="${id}", {formId}="${id}", RECORD_ID()="${id}")`);
+    if (!id) return;
+
+    const formula = encodeURIComponent(`{Video ID}="${id}"`);
     const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
 
-    try {
-        const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
-        const data = await res.json();
-        
-        if (!data.records || data.records.length === 0) {
-            document.getElementById('loader').innerText = "FINDING YOUR REEL...";
-            return;
-        }
+    const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${TOKEN}` }
+    });
 
-        const f = data.records[0].fields;
-        
-        // Handle lookup field for Business Name
-        let name = f['Charter Name'] || "Your Stay";
-        if (Array.isArray(name)) name = name[0];
-        document.getElementById('bizName').innerText = name.toUpperCase();
+    const data = await res.json();
 
-        const videoUrl = f['Video URL'];
-        if (videoUrl) {
-            videoElement.src = videoUrl;
-        }
-
-        // Handle lookup field for Review Link
-        let review = f['Review'] || f['GMB Review Link'];
-        if (review) {
-            document.getElementById('reviewBtn').href = Array.isArray(review) ? review[0] : review;
-            document.getElementById('reviewBtn').style.display = 'block';
-        }
-
-        document.getElementById('shareBtn').href = `send.html?id=${id}`;
-        document.getElementById('loader').style.display = 'none';
-        document.getElementById('main').style.display = 'flex';
-
-    } catch (err) {
-        document.getElementById('loader').innerText = "CONNECTION ERROR";
+    if (!data.records || !data.records.length) {
+        console.error("No record found");
+        return;
     }
+
+    const f = data.records[0].fields;
+
+    let name = f['Charter Name'] || "Your Stay";
+    if (Array.isArray(name)) name = name[0];
+
+    document.getElementById('bizName').innerText = name.toUpperCase();
+
+    const videoUrl = f['Video URL'];
+    document.getElementById('video').src = videoUrl;
+
+    let review = f['Review'] || f['GMB Review Link'];
+    if (review) {
+        let r = Array.isArray(review) ? review[0] : review;
+        document.getElementById('reviewBtn').href = r;
+        document.getElementById('reviewBtn').style.display = 'block';
+    }
+
+    document.getElementById('shareBtn').href = `send.html?id=${id}`;
+
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('main').style.display = 'block';
 }
 
 function downloadVideo() {
-    let url = videoElement.src;
+    let url = document.getElementById('video').src;
     url = url.replace('/upload/', '/upload/fl_attachment/');
     window.open(url, '_blank');
 }
 
 load();
 </script>
+
 </body>
 </html>
