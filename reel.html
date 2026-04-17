@@ -15,7 +15,13 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 
 <style>
-:root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; --yellow:#FFD700; }
+:root { 
+    --navy:#0A192F; 
+    --pearl:#FDFBF7; 
+    --accent:#E2E8F0; 
+    --yellow:#FFD700; 
+    --blue-grad: linear-gradient(135deg, #0A192F 0%, #0047AB 100%); 
+}
 * { box-sizing: border-box; }
 body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; overflow: hidden; }
 
@@ -57,7 +63,6 @@ body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--nav
     border: 1px solid var(--accent);
     display: flex;
     align-items: center;
-    cursor: pointer; /* Shows it's clickable */
 }
 video { width: 100%; max-height: 50vh; object-fit: contain; display: block; }
 
@@ -81,16 +86,24 @@ video { width: 100%; max-height: 50vh; object-fit: contain; display: block; }
     text-decoration: none; 
     transition: 0.2s;
     text-align: center;
+    border: none;
 }
 
+/* Yellow Review Button */
 #reviewBtn { 
     background: var(--yellow); 
     color: #000; 
-    border: 2px solid var(--yellow); 
     display: none; 
 }
 
-.btn-secondary { background: transparent; color: var(--navy); border: 2px solid var(--navy); }
+/* Blue Gradient Buttons */
+.btn-grad { 
+    background: var(--blue-grad); 
+    color: #fff; 
+    box-shadow: 0 4px 15px rgba(10, 25, 47, 0.2);
+}
+
+.btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
 .footer-main { 
     font-size: 8px; 
@@ -111,15 +124,16 @@ video { width: 100%; max-height: 50vh; object-fit: contain; display: block; }
     <div id="bizName" class="biz-name"></div>
 
     <div class="content-area">
-        <div class="video-wrap" onclick="toggleFull()">
+        <div class="video-wrap">
             <video id="video" playsinline controls></video>
         </div>
 
-        <div class="video-hint">TAP VIDEO TO ENLARGE</div>
+        <div class="video-hint">TAP VIDEO TO ENLARGE WHEN PLAYING</div>
 
         <a id="reviewBtn" class="btn" target="_blank">Leave Us A Review</a>
-        <button class="btn btn-secondary" onclick="downloadVideo()">Download Reel</button>
-        <a id="shareBtn" class="btn btn-secondary">Share</a>
+        
+        <button class="btn btn-grad" onclick="downloadVideo()">Download Reel</button>
+        <a id="shareBtn" class="btn btn-grad">Share</a>
     </div>
 
     <div class="footer-main">POWERED BY ROD2REEL</div>
@@ -131,18 +145,17 @@ const TOKEN = 'patODjpFQhnsR92tl.5c80e0baa73a4b2099a83fead58c6cf8ac9811041b7077f
 const BASE = 'appGGs07d4FB6htwg';
 const TABLE = 'tblCYkMaAOHrX0nwN';
 
-const video = document.getElementById('video');
+const videoElement = document.getElementById('video');
 
-// Fullscreen Logic for Mobile
-function toggleFull() {
-    if (video.requestFullscreen) {
-        video.requestFullscreen();
-    } else if (video.webkitEnterFullscreen) {
-        video.webkitEnterFullscreen();
-    } else if (video.msRequestFullscreen) {
-        video.msRequestFullscreen();
+videoElement.addEventListener('click', function() {
+    if (!videoElement.paused) {
+        if (videoElement.requestFullscreen) {
+            videoElement.requestFullscreen();
+        } else if (videoElement.webkitEnterFullscreen) {
+            videoElement.webkitEnterFullscreen();
+        }
     }
-}
+});
 
 function setMeta(name, content) {
     let el = document.querySelector(`meta[property="${name}"]`);
@@ -164,7 +177,7 @@ async function load() {
     document.getElementById('bizName').innerText = name.toUpperCase();
 
     const videoUrl = f['Video URL'];
-    video.src = videoUrl;
+    videoElement.src = videoUrl;
 
     let thumb = videoUrl.replace('/upload/', '/upload/so_0,l_play-button,fl_layer_apply/').replace('.mp4', '.jpg');
     setMeta("og:title", name + " Video");
@@ -183,7 +196,7 @@ async function load() {
 }
 
 function downloadVideo() {
-    let url = video.src;
+    let url = videoElement.src;
     url = url.replace('/upload/', '/upload/fl_attachment/');
     window.open(url, '_blank');
 }
@@ -193,4 +206,3 @@ load();
 
 </body>
 </html>
-
