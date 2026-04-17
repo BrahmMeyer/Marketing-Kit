@@ -32,18 +32,16 @@ body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--nav
     height: 100%; 
     min-height: -webkit-fill-available;
     flex-direction: column; 
-    padding: 15px 20px; 
+    padding: 10px 20px; /* Reduced padding for more room */
     max-width: 400px; 
     margin: 0 auto;
     text-align: center;
-    /* Removed space-between here to control the top gap manually */
 }
 
 .biz-name { 
     font-size: 18px; 
     font-weight: 900; 
-    margin-top: 10px; /* Added slight top margin */
-    margin-bottom: 15px; /* Controlled gap between text and video */
+    margin: 10px 0; /* Tight margin top and bottom */
     text-transform: uppercase; 
     flex-shrink: 0;
 }
@@ -51,40 +49,47 @@ body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--nav
 .content-area {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Keeps video near the top */
-    gap: 8px;
-    flex-grow: 1; 
+    flex-grow: 1; /* This fills the screen */
+    overflow: hidden;
 }
 
 .video-wrap { 
     width: 100%; 
-    max-height: 52vh; 
+    flex-grow: 1; /* VIDEO NOW ADAPTS TO FILL SPACE */
     border-radius: 12px; 
     overflow: hidden; 
     background: #000; 
     border: 1px solid var(--accent);
     display: flex;
     align-items: center;
+    position: relative;
 }
-video { width: 100%; max-height: 52vh; object-fit: contain; display: block; }
+
+/* Forces the video to fill the growing container without overflowing */
+video { 
+    width: 100%; 
+    height: 100%; 
+    max-height: 100%; 
+    object-fit: contain; 
+    display: block; 
+}
 
 .video-hint {
     font-size: 10px;
     font-weight: 700;
     color: var(--navy);
     opacity: 0.8;
-    margin-top: 5px;
-    margin-bottom: 10px;
+    margin: 10px 0; /* Tight gap under video */
     letter-spacing: 0.5px;
+    flex-shrink: 0;
 }
 
-/* This pushes the buttons and footer down if there is extra space */
 .button-group {
-    margin-top: auto; 
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 10px; /* Gap above footer */
+    flex-shrink: 0;
 }
 
 .btn { 
@@ -135,6 +140,7 @@ video { width: 100%; max-height: 52vh; object-fit: contain; display: block; }
         <div class="video-wrap">
             <video id="video" playsinline controls></video>
         </div>
+        
         <div class="video-hint">PREVIEW - PRESS ENLARGE TO VIEW ORIGINAL SIZE</div>
         
         <div class="button-group">
@@ -203,4 +209,4 @@ load();
 </script>
 
 </body>
-</html>>
+</html>
