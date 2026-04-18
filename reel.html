@@ -10,49 +10,50 @@
             --navy:#0A192F; 
             --pearl:#FDFBF7; 
             --accent:#E2E8F0; 
-            /* Updated to specific Solid Gold Color */
             --gold-btn: #e0bf0b; 
             --blue-grad: linear-gradient(135deg, #0A192F 0%, #0047AB 100%); 
         }
         * { box-sizing: border-box; }
         body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; overflow: hidden; }
-        
         #loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; flex-direction: column; text-align: center; padding: 20px; }
         #main { display: none; height: 100%; flex-direction: column; padding: 10px 20px; max-width: 450px; margin: 0 auto; text-align: center; }
-        
         .biz-name { font-size: 18px; font-weight: 900; margin: 15px 0; text-transform: uppercase; flex-shrink: 0; color: var(--navy); min-height: 24px; }
-        
         .content-area { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; width: 100%; }
-        
         .video-wrap { width: 100%; flex-grow: 1; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid var(--accent); display: flex; align-items: center; position: relative; }
         video { width: 100%; height: 100%; object-fit: contain; display: block; }
-        
         .video-hint { font-size: 10px; font-weight: 700; color: var(--navy); opacity: 0.8; margin: 10px 0; letter-spacing: 0.5px; flex-shrink: 0; text-transform: uppercase; }
-        
         .button-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; flex-shrink: 0; width: 100%; }
-        
-        .btn { width: 100%; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; display: block; text-transform: uppercase; text-decoration: none; transition: 0.2s; text-align: center; border: none; }
-        
-        /* Updated Solid Gold Review Button */
+        .btn { 
+            width: 100%; 
+            padding: 14px; 
+            border-radius: 10px; 
+            font-weight: 700; 
+            font-size: 13px; 
+            letter-spacing: 1px;
+            cursor: pointer; 
+            display: block; 
+            text-transform: uppercase; 
+            text-decoration: none; 
+            text-align: center; 
+            border: none;
+            font-family: 'DM Sans', sans-serif;
+        }
         #reviewBtn { background: var(--gold-btn); color: #000; display: none; }
         .btn-grad { background: var(--blue-grad); color: #fff; }
-        
         .footer-main { font-size: 8px; padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; flex-shrink: 0; }
     </style>
 </head>
 <body>
-
 <div id="loader">
     <div id="loaderText">FINDING YOUR REEL...</div>
 </div>
-
 <div id="main">
     <div id="bizName" class="biz-name"></div>
     <div class="content-area">
         <div class="video-wrap">
             <video id="video" playsinline controls></video>
         </div>
-        <div class="video-hint">PREVIEW - PRESS ENLARGE TO VIEW ORIGINAL SIZE</div>
+        <div class="video-hint">PREVIEW — TAP FULLSCREEN FOR ORIGINAL SIZE</div>
         <div class="button-group">
             <a id="reviewBtn" class="btn" target="_blank">Leave Us A Review</a>
             <button class="btn btn-grad" onclick="downloadVideo()">Download Reel</button>
@@ -61,37 +62,27 @@
     </div>
     <div class="footer-main">POWERED BY ROD2REEL</div>
 </div>
-
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
-
 const TOKEN = 'patN1QvygDdKNlLG3.550efc0913e840069b3dbb5fd7cecdc19074b7d813b5320469fe8ddf91b67411';
-const BASE = 'app3pbcDqGLbnMq7b'; 
-const TABLE = 'tblJ2WEQiArPfdowy'; 
-
+const BASE = 'app3pbcDqGLbnMq7b';
+const TABLE = 'tblJ2WEQiArPfdowy';
 async function load() {
     if (!id) return;
-    
     const formula = encodeURIComponent(`OR({Video ID}="${id}", {formId}="${id}")`);
     const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
-
     try {
         const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
         const data = await res.json();
-        
         if (!data.records || data.records.length === 0) {
             document.getElementById('loaderText').innerText = "STILL GENERATING...";
             return;
         }
-
         const f = data.records[0].fields;
-        
         let nameVal = f['Charter Name'] || "YOUR HIGHLIGHT REEL";
         const headerTitle = Array.isArray(nameVal) ? nameVal[0] : nameVal;
         document.getElementById('bizName').innerText = headerTitle.toString().toUpperCase();
-
         if (f['Video URL']) document.getElementById('video').src = f['Video URL'];
-
         let reviewRaw = f['Review'];
         if (reviewRaw) {
             let link = Array.isArray(reviewRaw) ? reviewRaw[0] : reviewRaw;
@@ -100,22 +91,18 @@ async function load() {
                 document.getElementById('reviewBtn').style.display = 'block';
             }
         }
-
         document.getElementById('shareBtn').href = `send.html?id=${id}`;
         document.getElementById('loader').style.display = 'none';
         document.getElementById('main').style.display = 'flex';
-
     } catch (err) {
         document.getElementById('loaderText').innerText = "CONNECTION ERROR";
     }
 }
-
 function downloadVideo() {
     let url = document.getElementById('video').src;
     url = url.replace('/upload/', '/upload/fl_attachment/');
     window.open(url, '_blank');
 }
-
 load();
 </script>
 </body>
