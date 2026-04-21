@@ -1,7 +1,34 @@
-<script>
-// Your specific Google Sheets CSV Publication Link
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTHYc7IDeoKNO2A56pEnCJX13WQQbveV8wnQk4Uv-4kEk7A-1V7xNnQHbqjcwlf0uJRQ3J1W7cTGdCh/pub?output=csv';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Video Reel</title>
+    <style>
+        body { background: #FDFBF7; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; text-align: center; padding: 20px; color: #0A192F; margin: 0; }
+        #loader { margin-top: 100px; font-weight: bold; color: #718096; font-size: 1.1rem; }
+        #main { display: none; flex-direction: column; align-items: center; max-width: 500px; margin: 0 auto; }
+        video { width: 100%; border-radius: 16px; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-top: 10px; }
+        .biz-name { font-size: 1.2rem; font-weight: 800; letter-spacing: 1px; margin-bottom: 15px; color: #0A192F; }
+        .btn { display: block; width: 100%; box-sizing: border-box; padding: 16px; margin: 10px 0; background: #0A192F; color: #fff; text-decoration: none; border-radius: 12px; font-weight: bold; text-transform: uppercase; font-size: 14px; }
+        .btn-secondary { background: #0047AB; }
+    </style>
+</head>
+<body>
 
+<div id="loader">✨ LOADING YOUR REEL...</div>
+
+<div id="main">
+    <div id="bizName" class="biz-name">YOUR REEL</div>
+    <video id="video" playsinline controls autoplay></video>
+    
+    <div style="width: 100%; margin-top: 20px;">
+        <a id="dlBtn" class="btn" href="#" target="_blank">Download Reel</a>
+        <a id="shareBtn" class="btn btn-secondary" href="#">Share Reel</a>
+    </div>
+</div>
+
+<script>
 async function loadReel() {
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');
@@ -11,40 +38,51 @@ async function loadReel() {
         return;
     }
 
+    // NEW AIRTABLE CONFIG
+    const TOKEN = 'patcg5qiA5GY0C9dG.99f8e22ce623b22372b0654d341ee3d6164160d11e591f28d7d4d26b76ea2589';
+    const BASE = 'appMDAS9DBPWtBiYZ';
+    const TABLE = 'tblvqMOioHwGPLIik';
+    
+    // Formula looks for the ID in the "ID" column
+    const formula = encodeURIComponent(`{ID}="${id}"`);
+    const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
+
     try {
-        // Cache Buster added to end of URL to ensure fresh data
-        const response = await fetch(CSV_URL + '&cachebust=' + Date.now());
-        const csvText = await response.text();
-        
-        const rows = csvText.split('\n').map(row => {
-            return row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(cell => cell.replace(/^"|"$/g, '').trim());
+        const res = await fetch(url, {
+            headers: { Authorization: `Bearer ${TOKEN}` }
         });
+        const data = await res.json();
 
-        const record = rows.reverse().find(r => r[0] === id);
+        if (data.records && data.records.length > 0) {
+            const fields = data.records[0].fields;
+            const videoUrl = fields['Video URL'];
+            const businessName = fields['Charter Name'] || "YOUR REEL";
 
-        if (record && record[6]) { // Column G
-            const businessName = record[2] || "YOUR REEL"; 
-            const videoUrl = record[6];
+            if (videoUrl) {
+                document.getElementById('bizName').innerText = businessName.toUpperCase();
+                document.getElementById('video').src = videoUrl;
+                
+                let downloadUrl = videoUrl;
+                if (downloadUrl.includes('cloudinary')) {
+                    downloadUrl = downloadUrl.replace('/upload/', '/upload/fl_attachment/');
+                }
+                document.getElementById('dlBtn').href = downloadUrl;
+                document.getElementById('shareBtn').href = `send.html?id=${id}`;
 
-            document.getElementById('bizName').innerText = businessName.toUpperCase();
-            document.getElementById('video').src = videoUrl;
-            
-            let downloadUrl = videoUrl;
-            if (downloadUrl.includes('cloudinary')) {
-                downloadUrl = downloadUrl.replace('/upload/', '/upload/fl_attachment/');
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('main').style.display = 'flex';
+            } else {
+                document.getElementById('loader').innerHTML = "🎥 REEL IS STILL RENDERING...<br><br><small>Please refresh in 30 seconds.</small>";
             }
-            document.getElementById('dlBtn').href = downloadUrl;
-            document.getElementById('shareBtn').href = `send.html?id=${id}`;
-
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('main').style.display = 'flex';
         } else {
-            document.getElementById('loader').innerHTML = "🎥 REEL IS STILL RENDERING...<br><br><small>Please refresh this page in about 60 seconds.</small>";
+            document.getElementById('loader').innerText = "❌ REEL NOT FOUND";
         }
-    } catch (error) {
-        console.error("Fetch error:", error);
-        document.getElementById('loader').innerText = "⚠️ CONNECTION ERROR: PLEASE REFRESH";
+    } catch (err) {
+        console.error(err);
+        document.getElementById('loader').innerText = "⚠️ CONNECTION ERROR";
     }
 }
 loadReel();
 </script>
+</body>
+</html>
