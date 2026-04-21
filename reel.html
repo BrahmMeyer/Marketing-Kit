@@ -55,8 +55,8 @@ async function load() {
     const BASE = 'appMDAS9DBPWtBiYZ';
     const TABLE = 'tblvqMOioHwGPLIik';
     
-    // Sort logic: Sort by 'Created' column descending (newest at the top)
     const formula = encodeURIComponent(`{ID}="${id}"`);
+    // Sorting specifically by your "Created" column in descending order
     const sort = encodeURIComponent('sort[0][field]=Created&sort[0][direction]=desc');
     const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}&${sort}`;
 
@@ -64,28 +64,40 @@ async function load() {
         const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
         const data = await res.json();
         
-        // Take record index 0 because the newest is now at the top
         if (data.records && data.records.length > 0) {
-            const f = data.records[0].fields;
-            document.getElementById('bizName').innerText = (f['Charter Name'] || "YOUR REEL").toUpperCase();
-            if (f['Video URL']) document.getElementById('video').src = f['Video URL'];
-            
-            if (f['Review']) {
-                const link = Array.isArray(f['Review']) ? f['Review'][0] : f['Review'];
-                if (link.toString().includes('http')) {
-                    document.getElementById('reviewBtn').href = link;
-                    document.getElementById('reviewBtn').style.display = 'block';
-                }
-            }
-            document.getElementById('shareBtn').href = `send.html?id=${id}`;
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('main').style.display = 'flex';
+            // Because we sorted 'desc', index 0 is always the most recent entry
+            displayReel(data.records[0].fields, id);
         } else {
-            document.getElementById('loaderText').innerText = "❌ REEL NOT FOUND";
+            // Fallback: If sorting fails or yields no results, try one last time without the sort
+            const fallbackUrl = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
+            const fbRes = await fetch(fallbackUrl, { headers: { Authorization: `Bearer ${TOKEN}` } });
+            const fbData = await fbRes.json();
+            
+            if (fbData.records && fbData.records.length > 0) {
+                displayReel(fbData.records[fbData.records.length - 1].fields, id);
+            } else {
+                document.getElementById('loaderText').innerText = "❌ REEL NOT FOUND";
+            }
         }
     } catch (err) {
         document.getElementById('loaderText').innerText = "⚠️ CONNECTION ERROR";
     }
+}
+
+function displayReel(f, id) {
+    document.getElementById('bizName').innerText = (f['Charter Name'] || "YOUR REEL").toUpperCase();
+    if (f['Video URL']) document.getElementById('video').src = f['Video URL'];
+    
+    if (f['Review']) {
+        const link = Array.isArray(f['Review']) ? f['Review'][0] : f['Review'];
+        if (link.toString().includes('http')) {
+            document.getElementById('reviewBtn').href = link;
+            document.getElementById('reviewBtn').style.display = 'block';
+        }
+    }
+    document.getElementById('shareBtn').href = `send.html?id=${id}`;
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('main').style.display = 'flex';
 }
 
 function downloadVideo() {
@@ -95,6 +107,7 @@ function downloadVideo() {
         window.open(vUrl, '_blank');
     }
 }
+
 load();
 </script>
 </body>
