@@ -1,36 +1,53 @@
 async function load() {
     const urlParams = new URLSearchParams(window.location.search);
     const rawId = urlParams.get('id');
-    if (!rawId) { document.getElementById('loaderText').innerText = "❌ ERROR: NO ID"; return; }
     
+    if (!rawId) { 
+        document.getElementById('loaderText').innerText = "❌ ERROR: NO ID"; 
+        return; 
+    }
+    
+    // Clean the ID
     const id = rawId.split(' ')[0].trim();
     
     const TOKEN = 'patcg5qiA5GY0C9dG.99f8e22ce623b22372b0654d341ee3d6164160d11e591f28d7d4d26b76ea2589';
     const BASE = 'appMDAS9DBPWtBiYZ';
     const TABLE = 'tblvqMOioHwGPLIik';
     
-    const formula = encodeURIComponent(`{ID}="${id}"`);
-    // This part is vital for your big client: it ensures they see the NEWEST render
-    const sort = encodeURIComponent('sort[0][field]=Created&sort[0][direction]=desc');
-    const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}&${sort}&cb=${Date.now()}`;
+    // Construct URL with proper encoding for brackets
+    const baseUrl = `https://api.airtable.com/v0/${BASE}/${TABLE}`;
+    const filter = `filterByFormula=${encodeURIComponent(`{ID}="${id}"`)}`;
+    const sortField = `sort[0][field]=Created`;
+    const sortDir = `sort[0][direction]=desc`;
+    const cb = `cb=${Date.now()}`;
+    
+    const finalUrl = `${baseUrl}?${filter}&${sortField}&${sortDir}&${cb}`;
 
     try {
-        const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
+        const res = await fetch(finalUrl, { 
+            headers: { Authorization: `Bearer ${TOKEN}` } 
+        });
         const data = await res.json();
         
         if (data.records && data.records.length > 0) {
-            // Index 0 is the newest because of the 'desc' sort above
+            // Because we sorted DESC, the first record is the newest
             const f = data.records[0].fields;
+            
             document.getElementById('bizName').innerText = (f['Charter Name'] || "YOUR REEL").toUpperCase();
-            if (f['Video URL']) document.getElementById('video').src = f['Video URL'];
+            
+            if (f['Video URL']) {
+                document.getElementById('video').src = f['Video URL'];
+            }
             
             if (f['Review']) {
                 const link = Array.isArray(f['Review']) ? f['Review'][0] : f['Review'];
                 if (link.toString().includes('http')) {
-                    document.getElementById('reviewBtn').href = link;
-                    document.getElementById('reviewBtn').style.display = 'block';
+                    const reviewBtn = document.getElementById('reviewBtn');
+                    reviewBtn.href = link;
+                    reviewBtn.style.display = 'block';
                 }
             }
+            
             document.getElementById('shareBtn').href = `send.html?id=${id}`;
             document.getElementById('loader').style.display = 'none';
             document.getElementById('main').style.display = 'flex';
@@ -38,7 +55,9 @@ async function load() {
             document.getElementById('loaderText').innerText = "❌ REEL NOT FOUND";
         }
     } catch (err) {
+        console.error(err);
         document.getElementById('loaderText').innerText = "⚠️ CONNECTION ERROR";
     }
 }
+
 load();
