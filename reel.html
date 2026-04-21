@@ -1,72 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Your Video</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; --gold:#C0A34D; --blue-grad: linear-gradient(135deg, #2D3748 0%, #4A5568 100%); }
-        body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; overflow: hidden; }
-        #loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; flex-direction: column; text-align: center; padding: 20px; }
-        #main { display: none; height: 100%; flex-direction: column; padding: 10px 20px; max-width: 450px; margin: 0 auto; text-align: center; }
-        .biz-name { font-size: 18px; font-weight: 700; margin: 15px 0; text-transform: uppercase; color: var(--navy); min-height: 24px; }
-        .video-wrap { width: 100%; flex-grow: 1; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid var(--accent); display: flex; align-items: center; }
-        video { width: 100%; height: 100%; object-fit: contain; }
-        .btn { width: 100%; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; text-transform: uppercase; text-decoration: none; text-align: center; border: none; margin-bottom: 8px; display: block; font-family: 'DM Sans', sans-serif; }
-        #reviewBtn { background: var(--gold); color: #fff; display: none; }
-        .btn-grad { background: var(--blue-grad); color: #fff; }
-        #debugInfo { font-size: 10px; color: red; margin-top: 10px; display: none; }
-    </style>
-</head>
-<body>
-<div id="loader">
-    <div id="loaderText">FINDING YOUR REEL...</div>
-    <div id="debugInfo"></div>
-</div>
-<div id="main">
-    <div id="bizName" class="biz-name"></div>
-    <div class="video-wrap"><video id="video" playsinline controls></video></div>
-    <p style="font-size: 10px; margin: 10px 0; font-weight: 700;">PREVIEW — TAP FULLSCREEN FOR ORIGINAL SIZE</p>
-    <div class="button-group">
-        <a id="reviewBtn" target="_blank" class="btn">Leave Us A Review</a>
-        <button class="btn btn-grad" onclick="downloadVideo()">Download Reel</button>
-        <a id="shareBtn" class="btn btn-grad">Share</a>
-    </div>
-</div>
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
-const TOKEN = 'patN1QvygDdKNlLG3.550efc0913e840069b3dbb5fd7cecdc19074b7d813b5320469fe8ddf91b67411';
+// UPDATED TOKEN
+const TOKEN = 'patL3Q58sft42r9m6.edd9d972648dafe2db31136bfa425eb0b6e3399af91b05ab6a4a976c9bea24c9';
 const BASE = 'appWx9LdS0uWdrRzL';
-const TABLE = 'tblvUjEhTTiZU0pcI'; // "Imported table 2"
+const TABLE = 'tblvUjEhTTiZU0pcI'; 
 
 async function load() {
     if (!id) { document.getElementById('loaderText').innerText = "NO ID PROVIDED"; return; }
-    
-    // Checks formId (like pbP57B)
-    const formula = encodeURIComponent(`{formId}="${id}"`);
+    const formula = encodeURIComponent(`{formId}="${id.trim()}"`);
     const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
     
     try {
         const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
+        const data = await res.json();
         
-        if (res.status === 403) {
-            document.getElementById('loaderText').innerText = "ACCESS DENIED";
-            document.getElementById('debugInfo').innerText = "Check Airtable Token Permissions for Base: " + BASE;
-            document.getElementById('debugInfo').style.display = 'block';
+        if (res.status === 403 || res.status === 401) {
+            document.getElementById('loaderText').innerText = "AUTH ERROR";
             return;
         }
 
-        const data = await res.json();
-        
         if (!data.records || data.records.length === 0) {
             document.getElementById('loaderText').innerText = "STILL GENERATING...";
             return;
         }
 
-        // Get the latest record that has a Video URL
         const record = data.records.reverse().find(r => r.fields['Video URL']);
-        
         if (!record || !record.fields['Video URL']) {
             document.getElementById('loaderText').innerText = "VIDEO NOT READY YET";
             return;
@@ -97,5 +55,3 @@ function downloadVideo() {
 }
 load();
 </script>
-</body>
-</html>
