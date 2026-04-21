@@ -25,6 +25,7 @@
 </head>
 <body>
 <div id="loader"><div id="loaderText">FINDING YOUR REEL...</div></div>
+
 <div id="main">
     <div id="bizName" class="biz-name"></div>
     <div class="content-area">
@@ -40,21 +41,23 @@
 </div>
 
 <script>
-const urlParams = new URLSearchParams(window.location.search);
-const id = urlParams.get('id');
-
-const TOKEN = 'patcg5qiA5GY0C9dG.99f8e22ce623b22372b0654d341ee3d6164160d11e591f28d7d4d26b76ea2589';
-const BASE = 'appMDAS9DBPWtBiYZ';
-const TABLE = 'tblvqMOioHwGPLIik';
-
 async function load() {
-    if (!id) {
+    const urlParams = new URLSearchParams(window.location.search);
+    let rawId = urlParams.get('id');
+
+    if (!rawId) {
         document.getElementById('loaderText').innerText = "❌ ERROR: NO ID IN URL";
         return;
     }
 
-    // Updated to your new column name "ID"
-    const formula = encodeURIComponent(`{ID}="${id.trim()}"`);
+    // Clean the ID of any trailing junk like "style=" or spaces
+    const cleanId = rawId.split(' ')[0].split('style')[0].trim();
+
+    const TOKEN = 'patcg5qiA5GY0C9dG.99f8e22ce623b22372b0654d341ee3d6164160d11e591f28d7d4d26b76ea2589';
+    const BASE = 'appMDAS9DBPWtBiYZ';
+    const TABLE = 'tblvqMOioHwGPLIik';
+
+    const formula = encodeURIComponent(`{ID}="${cleanId}"`);
     const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
 
     try {
@@ -64,31 +67,32 @@ async function load() {
         const data = await res.json();
         
         if (data.records && data.records.length > 0) {
-            // Get the newest record (the last one)
-            const f = data.records[data.records.length - 1].fields;
+            // Sort by created time to get the absolute newest one
+            const records = data.records;
+            const latestRecord = records[records.length - 1].fields;
             
-            document.getElementById('bizName').innerText = (f['Charter Name'] || "YOUR REEL").toUpperCase();
+            document.getElementById('bizName').innerText = (latestRecord['Charter Name'] || "YOUR REEL").toUpperCase();
             
-            if (f['Video URL']) {
-                document.getElementById('video').src = f['Video URL'];
+            if (latestRecord['Video URL']) {
+                document.getElementById('video').src = latestRecord['Video URL'];
             }
 
-            if (f['Review']) {
-                const reviewLink = Array.isArray(f['Review']) ? f['Review'][0] : f['Review'];
-                if (reviewLink.includes('http')) {
-                    document.getElementById('reviewBtn').href = reviewLink;
+            const reviewLink = latestRecord['Review'];
+            if (reviewLink) {
+                const finalLink = Array.isArray(reviewLink) ? reviewLink[0] : reviewLink;
+                if (finalLink.toString().includes('http')) {
+                    document.getElementById('reviewBtn').href = finalLink;
                     document.getElementById('reviewBtn').style.display = 'block';
                 }
             }
 
-            document.getElementById('shareBtn').href = `send.html?id=${id}`;
+            document.getElementById('shareBtn').href = `send.html?id=${cleanId}`;
             document.getElementById('loader').style.display = 'none';
             document.getElementById('main').style.display = 'flex';
         } else {
-            document.getElementById('loaderText').innerText = "❌ REEL NOT FOUND FOR ID: " + id;
+            document.getElementById('loaderText').innerText = "❌ REEL NOT FOUND FOR ID: " + cleanId;
         }
     } catch (err) {
-        console.error("Fetch Error:", err);
         document.getElementById('loaderText').innerText = "⚠️ CONNECTION ERROR";
     }
 }
