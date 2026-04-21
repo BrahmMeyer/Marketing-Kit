@@ -1,27 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Share Reel</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&display=swap" rel="stylesheet">
-<style>
-:root { --navy:#0A192F; --pearl:#FDFBF7; --border:#E2E8F0; }
-body { background: var(--pearl); font-family: 'DM Sans', sans-serif; text-align: center; padding: 40px 20px; }
-.card { background: #fff; padding: 30px; border-radius: 20px; max-width: 350px; margin: auto; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-h2 { font-size: 18px; color: var(--navy); text-transform: uppercase; margin-bottom: 25px; }
-.btn { width: 100%; padding: 15px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; border: none; font-weight: 700; text-transform: uppercase; color: #fff; display: block; text-decoration: none; font-size: 13px; }
-.btn-wa { background: #2D6A4F; } .btn-fb { background: #4682B4; } .btn-x { background: #1A202C; } .btn-ig { background: #8B4513; }
-</style>
-</head>
-<body>
-<div class="card">
-  <h2>Share Your Reel</h2>
-  <button class="btn btn-wa" onclick="shareWhatsApp()">WhatsApp</button>
-  <a class="btn btn-fb" id="fbBtn" target="_blank">Facebook</a>
-  <a class="btn btn-x" id="xBtn" target="_blank">X (Twitter)</a>
-  <button class="btn btn-ig" onclick="saveForInstagram()">Save For Instagram</button>
-</div>
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
 const reelURL = `https://delivery.rod2reel.com/reel.html?id=${id}`;
@@ -32,7 +8,8 @@ document.getElementById('fbBtn').href = `https://www.facebook.com/sharer/sharer.
 document.getElementById('xBtn').href = `https://x.com/intent/tweet?text=${encodeURIComponent(msg)}`;
 
 async function saveForInstagram() {
-  const TOKEN = 'patN1QvygDdKNlLG3.550efc0913e840069b3dbb5fd7cecdc19074b7d813b5320469fe8ddf91b67411';
+  // UPDATED TOKEN
+  const TOKEN = 'patL3Q58sft42r9m6.edd9d972648dafe2db31136bfa425eb0b6e3399af91b05ab6a4a976c9bea24c9';
   const res = await fetch(`https://api.airtable.com/v0/appWx9LdS0uWdrRzL/tblvUjEhTTiZU0pcI?filterByFormula=${encodeURIComponent(`{formId}="${id}"`)}`, {
     headers: { Authorization: `Bearer ${TOKEN}` }
   });
@@ -44,5 +21,3 @@ async function saveForInstagram() {
   }
 }
 </script>
-</body>
-</html>
