@@ -3,23 +3,22 @@ const id = new URLSearchParams(window.location.search).get('id');
 const reelURL = `https://delivery.rod2reel.com/reel.html?id=${id}`;
 const msg = `Check out my highlight reel: ${reelURL}`;
 
-// Social Sharing Functions
 function shareWhatsApp() { 
     window.location.href = `whatsapp://send?text=${encodeURIComponent(msg)}`; 
 }
-document.getElementById('fbBtn').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(reelURL)}`;
-document.getElementById('xBtn').href = `https://x.com/intent/tweet?text=${encodeURIComponent(msg)}`;
+
+// Update sharing links if the elements exist
+if(document.getElementById('fbBtn')) document.getElementById('fbBtn').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(reelURL)}`;
+if(document.getElementById('xBtn')) document.getElementById('xBtn').href = `https://x.com/intent/tweet?text=${encodeURIComponent(msg)}`;
 
 async function saveForInstagram() {
     if (!id) return;
     
-    // UPDATED TOKEN & CONFIG
-    const TOKEN = 'patL3Q58sft42r9m6.edd9d972648dafe2db31136bfa425eb0b6e3399af91b05ab6a4a976c9bea24c9';
-    const BASE = 'appWx9LdS0uWdrRzL';
-    const TABLE = 'tblvUjEhTTiZU0pcI';
+    const TOKEN = 'patcg5qiA5GY0C9dG.99f8e22ce623b22372b0654d341ee3d6164160d11e591f28d7d4d26b76ea2589';
+    const BASE = 'appMDAS9DBPWtBiYZ';
+    const TABLE = 'tblvqMOioHwGPLIik';
 
-    // Using the same robust formula as the reel page
-    const formula = encodeURIComponent(`OR({Video ID}="${id}", {formId}="${id}")`);
+    const formula = encodeURIComponent(`{ID}="${id}"`);
     const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
 
     try {
@@ -29,21 +28,18 @@ async function saveForInstagram() {
         const data = await res.json();
 
         if (data.records && data.records.length > 0) {
-            // Find the latest record with a Video URL
-            const record = data.records.reverse().find(r => r.fields['Video URL']);
-            if (record) {
-                let videoUrl = record.fields['Video URL'];
-                // Force download for Instagram/Mobile saving
+            let videoUrl = data.records[0].fields['Video URL'];
+            if (videoUrl) {
                 if (videoUrl.includes('cloudinary')) {
                     videoUrl = videoUrl.replace('/upload/', '/upload/fl_attachment/');
                 }
                 window.open(videoUrl, '_blank');
             }
         } else {
-            alert("Video still processing, please try again in a moment.");
+            alert("Video still processing. Please try again in a moment.");
         }
     } catch (err) {
-        console.error("Download error:", err);
+        console.error(err);
     }
 }
 </script>
