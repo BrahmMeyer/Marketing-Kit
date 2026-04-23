@@ -55,9 +55,9 @@ async function load() {
     const TABLE = 'tblvqMOioHwGPLIik';
     
     const cb = Date.now();
-    // CRITICAL FIX: Searching by Video ID instead of Lodge ID
     const formula = encodeURIComponent(`{Video ID}="${id}"`);
-    const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}&cb=${cb}`;
+    // Added sort by Created Date Descending to ensure latest reel shows first
+    const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}&sort[0][field]=Created&sort[0][direction]=desc&cb=${cb}`;
 
     try {
         const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
