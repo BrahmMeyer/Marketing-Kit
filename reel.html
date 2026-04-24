@@ -21,6 +21,7 @@
         #reviewBtn { background: var(--gold-btn); color: #000; display: none; }
         .btn-grad { background: var(--blue-grad); color: #fff; }
         .footer-main { font-size: 8px; padding-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; flex-shrink: 0; line-height: 1.6; font-weight: 700; }
+        .btn:disabled { opacity: 0.5; cursor: wait; }
     </style>
 </head>
 <body>
@@ -32,7 +33,7 @@
         <div class="video-hint">PREVIEW — TAP FULLSCREEN FOR ORIGINAL SIZE</div>
         <div class="button-group">
             <a id="reviewBtn" class="btn" target="_blank">Leave Us A Review</a>
-            <button class="btn btn-grad" onclick="downloadVideo()">Download Reel</button>
+            <button id="dlBtn" class="btn btn-grad" onclick="downloadVideo()">Download Reel</button>
             <a id="shareBtn" class="btn btn-grad">Share</a>
         </div>
     </div>
@@ -42,23 +43,20 @@
 <script>
 async function load() {
     const urlParams = new URLSearchParams(window.location.search);
-    const rawId = urlParams.get('id');
-    if (!rawId) { document.getElementById('loaderText').innerText = "❌ ERROR: NO ID"; return; }
+    const id = urlParams.get('id')?.split(' ')[0].trim();
+    if (!id) { document.getElementById('loaderText').innerText = "❌ ERROR: NO ID"; return; }
     
-    const id = rawId.split(' ')[0].trim();
     const TOKEN = 'patcg5qiA5GY0C9dG.99f8e22ce623b22372b0654d341ee3d6164160d11e591f28d7d4d26b76ea2589';
     const BASE = 'appMDAS9DBPWtBiYZ';
     const TABLE = 'tblvqMOioHwGPLIik';
-    
-    const cb = Date.now();
     const formula = encodeURIComponent(`{Video ID}="${id}"`);
-    const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}&sort[0][field]=Created&sort[0][direction]=desc&cb=${cb}`;
+    const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}&sort[0][field]=Created&sort[0][direction]=desc&cb=${Date.now()}`;
 
     try {
         const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
         const data = await res.json();
         if (data.records && data.records.length > 0) {
-            displayReel(data.records[0].fields, id, cb);
+            displayReel(data.records[0].fields, id);
         } else {
             document.getElementById('loaderText').innerText = "❌ REEL NOT FOUND";
         }
@@ -67,36 +65,47 @@ async function load() {
     }
 }
 
-function displayReel(f, id, cb) {
+function displayReel(f, id) {
     document.getElementById('bizName').innerText = (f['Charter Name'] || "YOUR REEL").toUpperCase();
-    if (f['Video URL']) { document.getElementById('video').src = f['Video URL'] + "?v=" + cb; }
+    if (f['Video URL']) { document.getElementById('video').src = f['Video URL']; }
     if (f['Review']) {
         const link = Array.isArray(f['Review']) ? f['Review'][0] : f['Review'];
-        if (link.toString().includes('http')) {
-            document.getElementById('reviewBtn').href = link;
-            document.getElementById('reviewBtn').style.display = 'block';
-        }
+        document.getElementById('reviewBtn').href = link;
+        document.getElementById('reviewBtn').style.display = 'block';
     }
     document.getElementById('shareBtn').href = `send.html?id=${id}`;
     document.getElementById('loader').style.display = 'none';
     document.getElementById('main').style.display = 'flex';
 }
 
-function downloadVideo() {
-    const vUrl = document.getElementById('video').src;
-    if (!vUrl) return;
-    const cleanUrl = vUrl.split('?')[0];
-    const link = document.createElement('a');
-    link.href = cleanUrl;
-    link.setAttribute('download', 'MyVideoReel.mp4');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+async function downloadVideo() {
+    const btn = document.getElementById('dlBtn');
+    const video = document.getElementById('video');
+    if (!video.src) return;
+    
+    const originalText = btn.innerText;
+    btn.innerText = "PREPARING...";
+    btn.disabled = true;
+
+    try {
+        const response = await fetch(video.src);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "MySafariReel.mp4";
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    } catch (e) {
+        // Fallback if browser blocks the fetch
+        window.open(video.src, '_blank');
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
 }
-load();
-</script>
-</body>
-</html>
 load();
 </script>
 </body>
